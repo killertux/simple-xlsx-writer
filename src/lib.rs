@@ -9,7 +9,7 @@
 //! Basically, you just need to pass an output that implements [Write](std::io::Write) and [Sink](std::io::Sink) to the [WorkBook](crate::WorkBook). And while you are writing the file, it wil be written directly to the output already compressed. So, you could stream directly into a file using very little RAM. Or even write to the memory and still not use that much memory because the file will be already compressed.
 //!
 //! ## Example
-//! ```
+//! ```rust
 //! use simple_xlsx_writer::{row, Row, WorkBook};
 //! use std::fs::File;
 //! use std::io::Write;
@@ -64,7 +64,7 @@ mod tests {
         let mut cursor = Cursor::new(Vec::new());
         let mut workbook = WorkBook::new(&mut cursor)?;
         let cell_style = workbook.create_cell_style((255, 255, 255), (0, 0, 0));
-        let mut sheet_1 = workbook.get_new_sheet();
+        let sheet_1 = workbook.get_new_sheet();
         sheet_1.write_sheet(|sheet_writer| {
             sheet_writer.write_row(row!(
                 (1, &cell_style),
@@ -75,7 +75,7 @@ mod tests {
             sheet_writer.write_row(row!(true, false, false, false))?;
             Ok(())
         })?;
-        let mut sheet_2 = workbook.get_new_sheet();
+        let sheet_2 = workbook.get_new_sheet();
         sheet_2.write_sheet(|sheet_writer| {
             sheet_writer.write_row(row!(1, 2, 3, 4, 4))?;
             sheet_writer.write_row(row!("one", "two", "three"))?;
@@ -90,14 +90,14 @@ mod tests {
     fn test_is_valid_report() -> IoResult<()> {
         let mut cursor = Cursor::new(Vec::new());
         let mut workbook = WorkBook::new(&mut cursor)?;
-        let mut sheet_1 = workbook.get_new_sheet();
+        let sheet_1 = workbook.get_new_sheet();
         sheet_1.write_sheet(|sheet_writer| {
             sheet_writer.write_row(row!(1, 10.3, 54.3))?;
             sheet_writer.write_row(row!("ola", "text", "tree"))?;
             sheet_writer.write_row(row!(true, false, false, false))?;
             Ok(())
         })?;
-        let mut sheet_2 = workbook.get_new_sheet();
+        let sheet_2 = workbook.get_new_sheet();
         sheet_2.write_sheet(|sheet_writer| {
             sheet_writer.write_row(row!(1, 2, 3, 4, 4))?;
             sheet_writer.write_row(row!("one", "two", "three"))?;
