@@ -2,6 +2,7 @@ use crate::Row;
 use std::io::{Result as IoResult, Seek, Write};
 use zip::{write::FileOptions, ZipWriter};
 
+/// A XLSX sheet.
 pub struct Sheet<'a, W>
 where
     W: Write + Seek,
@@ -10,6 +11,7 @@ where
     zip_writer: &'a mut ZipWriter<W>,
 }
 
+/// Responsible to write a sheet into the workbook.
 pub struct SheetWriter<W>
 where
     W: Write,
@@ -27,8 +29,10 @@ where
         Self { id, zip_writer }
     }
 
+    /// Receives a closure that will write the sheet. The closure receive a [SheetWriter](SheetWriter) that can be used to write the rows into the sheet.
+    /// You don't need to call [finish](SheetWriter::finish) as it will be called for you.
     pub fn write_sheet<T>(
-        &mut self,
+        self,
         function: impl FnOnce(&mut SheetWriter<&mut ZipWriter<W>>) -> IoResult<T>,
     ) -> IoResult<T> {
         let options = FileOptions::default();
@@ -40,6 +44,8 @@ where
         Ok(result)
     }
 
+    /// Antoher way to write a sheet. Insted of using a closure that has access to the [SheetWriter](SheetWriter). This returns the [SheetWriter](SheetWriter) directly and you can use it to write the sheet.
+    /// You need to call [finish](SheetWriter::finish).
     pub fn sheet_writer(self) -> IoResult<SheetWriter<&'a mut ZipWriter<W>>> {
         let options = FileOptions::default();
         self.zip_writer
@@ -52,6 +58,22 @@ impl<W> SheetWriter<W>
 where
     W: Write,
 {
+    /// Writes a row into the sheet.
+    pub fn write_row(&mut self, row: Row) -> IoResult<()> {
+        self.row_index += 1;
+        write!(self.writer, "<row r=\"{}\">\n", self.row_index)?;
+        for (i, c) in row.cells().into_iter().enumerate() {
+            c.write(i as u8, self.row_index, &mut self.writer)?;
+        }
+        write!(self.writer, "\n</row>\n")?;
+        Ok(())
+    }
+
+    /// Finish the sheet. Necessary to be called if you got the [SheetWriter](SheetWriter) from [Sheet::sheet_writer](Sheet::sheet_writer). We also try to execute this in the [Drop](SheetWriter::drop), but it is a good practice to always finish the sheet.
+    pub fn finish(mut self) -> IoResult<()> {
+        self.write_footer()
+    }
+
     fn start(writer: W) -> IoResult<Self>
     where
         W: Write,
@@ -75,23 +97,9 @@ where
         Ok(())
     }
 
-    pub fn finish(mut self) -> IoResult<()> {
-        self.write_footer()
-    }
-
     fn write_footer(&mut self) -> IoResult<()> {
         self.written_footer = true;
         write!(self.writer, "\n</sheetData>\n</worksheet>\n")
-    }
-
-    pub fn write_row(&mut self, row: Row) -> IoResult<()> {
-        self.row_index += 1;
-        write!(self.writer, "<row r=\"{}\">\n", self.row_index)?;
-        for (i, c) in row.cells().into_iter().enumerate() {
-            c.write(i as u8, self.row_index, &mut self.writer)?;
-        }
-        write!(self.writer, "\n</row>\n")?;
-        Ok(())
     }
 }
 
@@ -99,6 +107,7 @@ impl<W> Drop for SheetWriter<W>
 where
     W: Write,
 {
+    /// Drops the [SheetWriter](SheetWriter) and tries to finish it if not already finished. This might panic if we fail to write the footer of the sheet.
     fn drop(&mut self) {
         if self.written_footer == false {
             self.write_footer().expect("Error written sheet footer");

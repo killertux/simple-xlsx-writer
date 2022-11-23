@@ -7,3 +7,6 @@ edition = "2021"
 
 [dependencies]
 zip = { version = "0.6.3", default-features = false, features = ["deflate"] }
+
+[dev-dependencies]
+calamine = "0.19"

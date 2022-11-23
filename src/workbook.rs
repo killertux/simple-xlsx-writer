@@ -2,6 +2,7 @@ use crate::Sheet;
 use std::io::{Result as IoResult, Seek, Write};
 use zip::{write::FileOptions, ZipWriter};
 
+/// The main struct to create a XLSX document. It is important to always [finish](WorkBook::finish) a workbook or the XLSX file will not be valid.
 pub struct WorkBook<W>
 where
     W: Write + Seek,
@@ -20,6 +21,8 @@ struct Font {
 struct Fill {
     foreground_rgb: (u8, u8, u8),
 }
+
+/// The cell style. Right now we can only set foreground color and background color.
 #[derive(Clone, Debug)]
 pub struct CellStyle {
     id: usize,
@@ -37,6 +40,7 @@ impl<W> WorkBook<W>
 where
     W: Write + Seek,
 {
+    /// Creates a new WorkBook using the provider writer as output.
     pub fn new(writer: W) -> IoResult<Self> {
         Ok(WorkBook {
             number_of_sheets: 0,
@@ -47,11 +51,13 @@ where
         })
     }
 
+    /// Create a neww sheet in the workbook.
     pub fn get_new_sheet(&mut self) -> Sheet<'_, W> {
         self.number_of_sheets += 1;
         Sheet::new(self.number_of_sheets, &mut self.zip_writer)
     }
 
+    /// Finish the XLSX file. You need to call this so you can have a valid XLSX file.
     pub fn finish(mut self) -> IoResult<()> {
         let options = FileOptions::default();
         self.write_content_type(&options)?;
@@ -67,6 +73,7 @@ where
         Ok(())
     }
 
+    /// Create a new CellStyle to be used in this workbook using the provided rgb foreground and background colors.
     pub fn create_cell_style(
         &mut self,
         font_color_rgb: (u8, u8, u8),

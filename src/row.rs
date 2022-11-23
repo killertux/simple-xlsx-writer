@@ -1,11 +1,13 @@
 use crate::CellStyle;
 use std::io::{Result as IoResult, Write};
 
+/// A row of a sheet. You can also create it using the macro `row!`
 #[derive(Clone, Debug)]
 pub struct Row<'a> {
     cells: Vec<Cell<'a>>,
 }
 
+/// A Cell of a row. It has a [CellValue](CellValue) and an optional [CellStyle](CellStyle)
 #[derive(Clone, Debug)]
 pub struct Cell<'a> {
     value: CellValue,
@@ -26,6 +28,7 @@ impl<'a> Row<'a> {
     }
 }
 
+/// A cell value. Right now, we can represent bool, f64 and strings
 #[derive(Clone, Debug)]
 pub enum CellValue {
     Bool(bool),
