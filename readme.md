@@ -1,7 +1,7 @@
 # simple_xlsx_writer
 This is a very simple XLSX writer library.
 
-This is not feature rich and it is not supposed to be. A lot of the design was based on the work of [ple_excel_writer](https://docs.rs/simple_excel_writer/latest/simple_excel_writer/) and I recomend you to check that crate.
+This is not feature rich and it is not supposed to be. A lot of the design was based on the work of [simple_excel_writer](https://docs.rs/simple_excel_writer/latest/simple_excel_writer/) and I recomend you to check that crate.
 
 The main idea of this create is to help you build XLSX files using very little RAM.
 I created it to use in my web assembly site [csv2xlsx](https://csv2xlsx.com).
