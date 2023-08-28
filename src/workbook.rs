@@ -222,7 +222,7 @@ where
                 self.zip_writer,
                 r#"
                 <fill>
-                    <patternFill patternType="solid"/>
+                    <patternFill patternType="solid">
                         <fgColor rgb="{:02X}{:02X}{:02X}"/>
                         <bgColor indexed="64"/>
                     <\ patternFill>
