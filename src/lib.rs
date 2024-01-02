@@ -6,7 +6,7 @@
 //! The main idea of this create is to help you build XLSX files using very little RAM.
 //! I created it to use in my web assembly site [csv2xlsx](https://csv2xlsx.com).
 //!
-//! Basically, you just need to pass an output that implements [Write](std::io::Write) and [Sink](std::io::Sink) to the [WorkBook](crate::WorkBook). And while you are writing the file, it wil be written directly to the output already compressed. So, you could stream directly into a file using very little RAM. Or even write to the memory and still not use that much memory because the file will be already compressed.
+//! Basically, you just need to pass an output that implements [Write](std::io::Write) and [Seek](std::io::Seek) to the [WorkBook](crate::WorkBook). And while you are writing the file, it wil be written directly to the output already compressed. So, you could stream directly into a file using very little RAM. Or even write to the memory and still not use that much memory because the file will be already compressed.
 //!
 //! ## Example
 //! ```rust
