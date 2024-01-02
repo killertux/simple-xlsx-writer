@@ -109,7 +109,7 @@ where
                       "#
         )?;
         for i in 0..self.number_of_sheets {
-            write!(self.zip_writer, "<Override PartName=\"/xl/worksheets/sheet{}.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml\"/>\n", i + 1)?;
+            writeln!(self.zip_writer, "<Override PartName=\"/xl/worksheets/sheet{}.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml\"/>", i + 1)?;
         }
         write!(
             self.zip_writer,
@@ -292,9 +292,9 @@ where
 "#
         )?;
         for i in 0..self.number_of_sheets {
-            write!(
+            writeln!(
                 self.zip_writer,
-                "<sheet name=\"Sheet {}\" sheetId=\"{}\" r:id=\"rId{}\"/>\n",
+                "<sheet name=\"Sheet {}\" sheetId=\"{}\" r:id=\"rId{}\"/>",
                 i + 1,
                 i + 1,
                 i + 3
@@ -331,9 +331,9 @@ where
         )?;
         let mut last_rid = 2;
         for i in 0..self.number_of_sheets {
-            write!(
+            writeln!(
                 self.zip_writer,
-                "<Relationship Id=\"rId{}\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet\" Target=\"worksheets/sheet{}.xml\"/>\n", i + 3, i + 1
+                "<Relationship Id=\"rId{}\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet\" Target=\"worksheets/sheet{}.xml\"/>", i + 3, i + 1
             )?;
             last_rid = i + 3;
         }

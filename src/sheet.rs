@@ -50,7 +50,7 @@ where
         let options = FileOptions::default();
         self.zip_writer
             .start_file(format!("xl/worksheets/sheet{}.xml", self.id), options)?;
-        Ok(SheetWriter::start(&mut *self.zip_writer)?)
+        SheetWriter::start(&mut *self.zip_writer)
     }
 }
 
@@ -61,11 +61,11 @@ where
     /// Writes a row into the sheet.
     pub fn write_row(&mut self, row: Row) -> IoResult<()> {
         self.row_index += 1;
-        write!(self.writer, "<row r=\"{}\">\n", self.row_index)?;
+        writeln!(self.writer, "<row r=\"{}\">", self.row_index)?;
         for (i, c) in row.cells().into_iter().enumerate() {
             c.write(i as u8, self.row_index, &mut self.writer)?;
         }
-        write!(self.writer, "\n</row>\n")?;
+        writeln!(self.writer, "\n</row>")?;
         Ok(())
     }
 
@@ -109,7 +109,7 @@ where
 {
     /// Drops the [SheetWriter](SheetWriter) and tries to finish it if not already finished. This might panic if we fail to write the footer of the sheet.
     fn drop(&mut self) {
-        if self.written_footer == false {
+        if !self.written_footer {
             self.write_footer().expect("Error written sheet footer");
         }
     }

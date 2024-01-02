@@ -2,7 +2,7 @@ use crate::CellStyle;
 use std::io::{Result as IoResult, Write};
 
 /// A row of a sheet. You can also create it using the macro `row!`
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct Row<'a> {
     cells: Vec<Cell<'a>>,
 }
@@ -45,26 +45,26 @@ impl<'a> Cell<'a> {
     ) -> IoResult<()> {
         let ref_id = ref_id(column_index, row_index);
         match &self.value {
-            CellValue::Bool(b) => write!(
+            CellValue::Bool(b) => writeln!(
                 writer,
-                "<c r=\"{}\" t=\"b\"{}><v>{}</v></c>\n",
+                "<c r=\"{}\" t=\"b\"{}><v>{}</v></c>",
                 ref_id,
                 self.cell(),
                 if *b { 1 } else { 0 }
             ),
             CellValue::Number(number) => {
-                write!(
+                writeln!(
                     writer,
-                    "<c r=\"{}\"{}><v>{}</v></c>\n",
+                    "<c r=\"{}\"{}><v>{}</v></c>",
                     ref_id,
                     self.cell(),
                     number
                 )
             }
             CellValue::String(string) => {
-                write!(
+                writeln!(
                     writer,
-                    "<c r=\"{}\" t=\"str\"{}><v>{}</v></c>\n",
+                    "<c r=\"{}\" t=\"str\"{}><v>{}</v></c>",
                     ref_id,
                     self.cell(),
                     escape_xml(string.as_str())
